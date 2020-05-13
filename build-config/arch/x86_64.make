@@ -42,7 +42,9 @@ ifndef CONSOLE_PORT
     CONSOLE_PORT = 0x3f8
   else ifeq ($(CONSOLE_DEV), 1)
     CONSOLE_PORT = 0x2f8
-  else
+  else ifeq ($(CONSOLE_DEV), 2)
+    CONSOLE_PORT = 0x3e8
+  else 
     $(error unknown CONSOLE_DEV value $(CONSOLE_DEV))
   endif
 endif
@@ -89,7 +91,8 @@ ifeq ($(PXE_EFI64_ENABLE),yes)
 endif
 
 UPDATER_IMAGE_PARTS = $(UPDATER_VMLINUZ) $(UPDATER_INITRD) $(UPDATER_ONIE_TOOLS) \
-			$(ROOTCONFDIR)/grub-arch/sysroot-lib-onie/onie-blkdev-common
+			$(ROOTCONFDIR)/grub-arch/sysroot-lib-onie/onie-blkdev-common \
+			$(ROOTCONFDIR)/grub-arch/sysroot-lib-onie/nos-mode-arch
 
 UPDATER_IMAGE_PARTS_COMPLETE = $(KERNEL_INSTALL_STAMP) $(UPDATER_INITRD) $(UPDATER_ONIE_TOOLS)
 

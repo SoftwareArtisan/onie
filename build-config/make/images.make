@@ -29,6 +29,7 @@ ONIE_TOOLS_DIR	= $(abspath ../tools)
 ONIE_SYSROOT_TOOLS_LIST = \
 	lib/onie \
 	bin/onie-boot-mode \
+	bin/onie-nos-mode \
 	bin/onie-fwpkg
 
 IMAGE_BIN_STAMP		= $(STAMPDIR)/image-bin
@@ -267,6 +268,10 @@ $(SYSROOT_COMPLETE_STAMP): $(SYSROOT_CHECK_STAMP)
 		cp -a $(MACHINEDIR)/rootconf/sysroot-rcK/* $(SYSROOTDIR)/etc/rc0.d ; \
 		cp -a $(MACHINEDIR)/rootconf/sysroot-rcK/* $(SYSROOTDIR)/etc/rc6.d ; \
 	     fi
+	$(Q) if [ -d $(MACHINEDIR)/rootconf/sysroot-etc ] ; then \
+		cp -ar $(MACHINEDIR)/rootconf/sysroot-etc/* $(SYSROOTDIR)/etc/ ; \
+		cp -ar $(MACHINEDIR)/rootconf/sysroot-etc/* $(SYSROOTDIR)/etc/ ; \
+	     fi
 	$(Q) cd $(SYSROOTDIR) && ln -fs sbin/init ./init
 	$(Q) rm -f $(LSB_RELEASE_FILE)
 	$(Q) echo "DISTRIB_ID=onie" >> $(LSB_RELEASE_FILE)
@@ -291,6 +296,7 @@ $(SYSROOT_COMPLETE_STAMP): $(SYSROOT_CHECK_STAMP)
 	$(Q) echo "onie_switch_asic=$(SWITCH_ASIC_VENDOR)" >> $(MACHINE_CONF)
 	$(Q) echo "onie_skip_ethmgmt_macs=$(SKIP_ETHMGMT_MACS)" >> $(MACHINE_CONF)
 ifeq ($(UEFI_ENABLE),yes)
+	$(Q) echo "onie_grub_image_name=$(UEFI_BOOT_LOADER)" >> $(MACHINE_CONF)
 	$(Q) echo "onie_uefi_boot_loader=$(UEFI_BOOT_LOADER)" >> $(MACHINE_CONF)
 	$(Q) echo "onie_uefi_arch=$(EFI_ARCH)" >> $(MACHINE_CONF)
 endif
@@ -323,7 +329,7 @@ endif
 
 $(UPDATER_ONIE_TOOLS): $(SYSROOT_COMPLETE_STAMP) $(SCRIPTDIR)/onie-mk-tools.sh
 	$(Q) echo "==== Create ONIE Tools tarball ===="
-	$(Q) $(SCRIPTDIR)/onie-mk-tools.sh $(ROOTFS_ARCH) $(ONIE_TOOLS_DIR) $@ \
+	$(Q) fakeroot -- $(SCRIPTDIR)/onie-mk-tools.sh $(ROOTFS_ARCH) $(ONIE_TOOLS_DIR) $@ \
 		$(SYSROOTDIR) $(ONIE_SYSROOT_TOOLS_LIST)
 
 .SECONDARY: $(ITB_IMAGE)
@@ -369,7 +375,7 @@ $(IMAGE_UPDATER_STAMP): $(UPDATER_IMAGE_PARTS_COMPLETE) $(UPDATER_IMAGE_PARTS_PL
 	     EXTRA_CMDLINE_LINUX="$(EXTRA_CMDLINE_LINUX)" \
 	     SERIAL_CONSOLE_ENABLE=$(SERIAL_CONSOLE_ENABLE) \
 	     UEFI_BOOT_LOADER=$(UEFI_BOOT_LOADER) \
-	     $(SCRIPTDIR)/onie-mk-installer.sh onie $(ROOTFS_ARCH) $(MACHINEDIR) \
+	     fakeroot -- $(SCRIPTDIR)/onie-mk-installer.sh onie $(ROOTFS_ARCH) $(MACHINEDIR) \
 		$(MACHINE_CONF) $(INSTALLER_DIR) \
 		$(UPDATER_IMAGE) $(UPDATER_IMAGE_PARTS) $(UPDATER_IMAGE_PARTS_PLATFORM)
 	$(Q) touch $@
@@ -437,7 +443,6 @@ $(RECOVERY_ISO_STAMP): $(GRUB_INSTALL_STAMP) $(GRUB_HOST_INSTALL_STAMP) $(RECOVE
 	     EXTRA_CMDLINE_LINUX="$(EXTRA_CMDLINE_LINUX)" \
 	     SERIAL_CONSOLE_ENABLE=$(SERIAL_CONSOLE_ENABLE) \
 	     SECURE_BOOT_ENABLE=$(SECURE_BOOT_ENABLE) \
-	     SBSIGN_EXE=$(SBSIGN_EXE) \
 	     SB_SHIM=$(SHIM_SECURE_BOOT_IMAGE) \
 	     ONIE_VENDOR_SECRET_KEY_PEM=$(ONIE_VENDOR_SECRET_KEY_PEM) \
 	     ONIE_VENDOR_CERT_PEM=$(ONIE_VENDOR_CERT_PEM) \

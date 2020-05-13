@@ -1,4 +1,4 @@
-From 8826e3b2e92c3f7cb589a740a77325b1f1cf4301 Mon Sep 17 00:00:00 2001
+From 2ac8d2c8fdf4572264f5b89d9769b1a620bada78 Mon Sep 17 00:00:00 2001
 From: Zhao Qiang <qiang.zhao@nxp.com>
 Date: Wed, 29 Nov 2017 14:20:13 +0800
 Subject: [PATCH] platform: ls1043ardb: add ONIE support
@@ -7,44 +7,44 @@ Add ONIE support for Freescale ls1043ardb platform.
 
 Signed-off-by: Zhao Qiang <qiang.zhao@nxp.com>
 ---
- configs/ls1043ardb_ONIE_0_defconfig | 40 +++++++++++++++++++++++++++++++++++++
- include/configs/ls1043ardb.h        | 38 +++++++++++++++++++++++++++++++++++
- 2 files changed, 78 insertions(+)
+ configs/ls1043ardb_ONIE_0_defconfig | 39 +++++++++++++++++++++++++++
+ include/configs/ls1043ardb.h        | 53 +++++++++++++++++++++++++++++++++++++
+ 2 files changed, 92 insertions(+)
  create mode 100644 configs/ls1043ardb_ONIE_0_defconfig
 
 diff --git a/configs/ls1043ardb_ONIE_0_defconfig b/configs/ls1043ardb_ONIE_0_defconfig
 new file mode 100644
-index 0000000..ec057d7
+index 0000000..36b2b23
 --- /dev/null
 +++ b/configs/ls1043ardb_ONIE_0_defconfig
-@@ -0,0 +1,40 @@
+@@ -0,0 +1,39 @@
 +CONFIG_ARM=y
 +CONFIG_TARGET_LS1043ARDB=y
++CONFIG_SYS_TEXT_BASE=0x60100000
 +CONFIG_FSL_LS_PPA=y
 +CONFIG_DEFAULT_DEVICE_TREE="fsl-ls1043a-rdb"
 +CONFIG_SYS_EXTRA_OPTIONS="ONIE,ONIE_PLATFORM_REV=0"
++CONFIG_DISTRO_DEFAULTS=y
 +CONFIG_FIT_VERBOSE=y
 +CONFIG_OF_BOARD_SETUP=y
 +CONFIG_BOOTDELAY=10
-+CONFIG_HUSH_PARSER=y
++CONFIG_CMD_IMLS=y
 +CONFIG_CMD_GPT=y
-+CONFIG_CMD_MMC=y
-+CONFIG_CMD_SF=y
 +CONFIG_CMD_I2C=y
++CONFIG_CMD_MMC=y
++CONFIG_CMD_NAND=y
++CONFIG_CMD_SF=y
 +CONFIG_CMD_USB=y
-+CONFIG_CMD_DHCP=y
-+CONFIG_CMD_PXE=y
-+CONFIG_CMD_MII=y
-+CONFIG_CMD_PING=y
 +CONFIG_CMD_CACHE=y
-+CONFIG_CMD_EXT2=y
-+CONFIG_CMD_FAT=y
 +CONFIG_OF_CONTROL=y
++CONFIG_ENV_IS_IN_FLASH=y
 +CONFIG_DM=y
 +CONFIG_FSL_CAAM=y
 +CONFIG_MTD_NOR_FLASH=y
 +CONFIG_SPI_FLASH=y
++CONFIG_PHYLIB=y
 +CONFIG_NETDEVICES=y
++CONFIG_PHY_GIGE=y
 +CONFIG_E1000=y
 +CONFIG_PCI=y
 +CONFIG_DM_PCI=y
@@ -57,12 +57,11 @@ index 0000000..ec057d7
 +CONFIG_USB_XHCI_HCD=y
 +CONFIG_USB_XHCI_DWC3=y
 +CONFIG_USB_STORAGE=y
-+CONFIG_DISTRO_DEFAULTS=y
 diff --git a/include/configs/ls1043ardb.h b/include/configs/ls1043ardb.h
-index f87fce6..8c99daa 100644
+index 06e2450..8dacd1c 100644
 --- a/include/configs/ls1043ardb.h
 +++ b/include/configs/ls1043ardb.h
-@@ -313,4 +313,42 @@
+@@ -294,4 +294,57 @@
  
  #include <asm/fsl_secure_boot.h>
  
@@ -79,6 +78,21 @@ index f87fce6..8c99daa 100644
 +#undef CONFIG_ENV_SIZE
 +#undef CONFIG_FIT
 +#undef CONFIG_EXTRA_ENV_SETTINGS
++#undef CONFIG_CMD_PING
++#undef CONFIG_CMD_PCI
++#undef CONFIG_CMD_MII
++#undef CONFIG_CMD_I2C
++#undef CONFIG_CMD_FAT
++#undef CONFIG_CMD_I2C
++#undef CONFIG_CMD_EXT2
++#undef CONFIG_CMD_DHCP
++#undef CONFIG_IDENT_STRING
++#undef CONFIG_SYS_LONGHELP
++#undef CONFIG_AUTO_COMPLETE
++#undef CONFIG_BOOTP_BOOTPATH
++#undef CONFIG_BOOTP_GATEWAY
++#undef CONFIG_BOOTP_HOSTNAME
++#undef CONFIG_BOOTP_SUBNETMASK
 +
 +#include "configs/common_config.h"
 +
